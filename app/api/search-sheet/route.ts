@@ -19,7 +19,6 @@ export async function GET() {
     });
 
     const rows = response.data.values || [];
-    
     const cities = rows.map(row => row[0]);
 
     return NextResponse.json({ cities });
@@ -29,6 +28,28 @@ export async function GET() {
     return NextResponse.json(
       { 
         error: 'Failed to fetch cities', 
+        details: error instanceof Error ? error.message : 'Unknown error',
+      },
+      { status: 500 }
+    );
+  }
+}
+
+export async function POST(req: Request) {
+  try {
+    const { day, city, rank, type } = await req.json();
+
+    // Implement your search logic here
+    // For example, fetch data from a database or another API based on the search parameters
+
+    const results = []; // Replace with actual search results
+
+    return NextResponse.json({ results });
+  } catch (error) {
+    console.error('Error in search API:', error);
+    return NextResponse.json(
+      { 
+        error: 'Failed to process search', 
         details: error instanceof Error ? error.message : 'Unknown error',
       },
       { status: 500 }

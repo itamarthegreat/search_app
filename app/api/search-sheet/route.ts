@@ -61,9 +61,11 @@ export async function POST(req: Request) {
 
       const matchDay = !day || normalizedRowDay === day.toLowerCase();
       const matchCity = !city || (row[6] && row[6].trim().toLowerCase() === city.toLowerCase());
-      const matchRank = !rank || (row[5] && row[5].trim() === rank);
-      const matchType = !type || (row[4] && row[4].trim().toLowerCase() === type.toLowerCase());
-      
+      const matchRank = !rank || (row[5] && row[5].trim().toLowerCase().includes(rank.toLowerCase()));
+      const matchType = !type || (type === 'נכות מהעבודה איבה ומס הכנסה' 
+        ? ['נכות עבודה', 'איבה', 'מס הכנסה'].some(t => row[4]?.trim().toLowerCase().includes(t.toLowerCase()))
+        : row[4]?.trim().toLowerCase().includes(type.toLowerCase()));
+
       return matchDay && matchCity && matchRank && matchType;
     });
 

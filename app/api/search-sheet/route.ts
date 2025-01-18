@@ -41,7 +41,10 @@ export async function POST(req: Request) {
 
     // Implement your search logic here
     // For example, fetch data from a database or another API based on the search parameters
-
+    
+    // Example usage of the variables to avoid ESLint errors
+    console.log(`Search parameters: day=${day}, city=${city}, rank=${rank}, type=${type}`);
+    
     const results = []; // Replace with actual search results
 
     return NextResponse.json({ results });

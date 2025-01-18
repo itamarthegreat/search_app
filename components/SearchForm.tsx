@@ -1,4 +1,4 @@
-'use client'
+'use client';
 
 import { useState, useEffect } from 'react';
 import { Button } from "@/components/ui/button";
@@ -45,7 +45,7 @@ export default function SearchForm() {
   ];
 
   const ranks = [
-    { id: 'rank1', label: 'דרג ראשון },
+    { id: 'rank1', label: 'דרג ראשון' },
     { id: 'rank2', label: 'עררים' },
   ];
 

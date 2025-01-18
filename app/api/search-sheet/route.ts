@@ -1,11 +1,8 @@
 import { google } from 'googleapis';
 import { NextResponse } from 'next/server';
 
-export async function POST(req: Request) {
+export async function GET(req: Request) {
   try {
-    const { day, city, rank, type } = await req.json();
-    console.log('Received request with:', { day, city, rank, type });
-
     const auth = new google.auth.GoogleAuth({
       credentials: {
         client_email: process.env.GOOGLE_CLIENT_EMAIL,
@@ -15,89 +12,23 @@ export async function POST(req: Request) {
     });
 
     const sheets = google.sheets({ version: 'v4', auth });
-    
+
     const response = await sheets.spreadsheets.values.get({
       spreadsheetId: process.env.SHEET_ID,
-      range: 'A:H',
+      range: 'Cities!A:A',
     });
 
     const rows = response.data.values || [];
-    console.log('Raw data from sheet:', rows[0]);
     
-    const filteredRows = rows.filter(row => {
-      if (row.length < 3) return false;
+    const cities = rows.map(row => row[0]);
 
-      const dateStr = row[2]?.trim() || '';
-      if (!dateStr) return false;
-
-      const dayStr = row[1]?.trim() || '';
-      if (!dayStr) return false;
-
-      const dayMapping: { [key: string]: string } = {
-        'רביעי': 'wednesday',
-        'שלישי': 'tuesday',
-        'שני': 'monday',
-        'ראשון': 'sunday',
-        'חמישי': 'thursday',
-        'שישי': 'friday',
-        'שבת': 'saturday'
-      };
-
-      const cleanDayStr = dayStr.replace('יום', '').trim();
-      const normalizedRowDay = dayMapping[cleanDayStr] || cleanDayStr;
-
-      console.log('Processing row:', {
-        date: dateStr,
-        dayStr: cleanDayStr,
-        normalizedDay: normalizedRowDay,
-        requestedDay: day,
-        city: row[6],
-        requestedCity: city,
-        rank: row[5],
-        requestedRank: rank,
-        type: row[4],
-        requestedType: type,
-      });
-
-      const matchDay = !day || normalizedRowDay === day.toLowerCase();
-      const matchCity = !city || (row[6] && row[6].trim().toLowerCase() === city.toLowerCase());
-      const matchRank = !rank || (row[5] && row[5].trim().toLowerCase().includes(rank.toLowerCase()));
-      const matchType = !type || (type === 'נכות מהעבודה איבה ומס הכנסה' 
-        ? ['נכות עבודה', 'איבה', 'מס הכנסה'].some(t => row[4]?.trim().toLowerCase().includes(t.toLowerCase()))
-        : row[4]?.trim().toLowerCase().includes(type.toLowerCase()));
-
-      return matchDay && matchCity && matchRank && matchType;
-    });
-
-    const formattedResults = filteredRows.map(row => ({
-      time: row[0] || '',
-      day: row[1]?.replace('יום', '').trim() || '',
-      date: row[2] || '',
-      name: row[3] || '',
-      type: row[4] || '',
-      rank: row[5] || '',
-      city: row[6] || '',
-      location: row[7] || '',
-      notes: row[8] || ''
-    }));
-
-    console.log('Final formatted results:', formattedResults);
-
-    return NextResponse.json({ 
-      results: formattedResults,
-      debug: { 
-        day, 
-        city, 
-        totalRows: rows.length, 
-        filteredCount: filteredRows.length,
-      }
-    });
+    return NextResponse.json({ cities });
 
   } catch (error) {
-    console.error('Error in search-sheet API:', error);
+    console.error('Error in cities API:', error);
     return NextResponse.json(
       { 
-        error: 'Failed to search sheet', 
+        error: 'Failed to fetch cities', 
         details: error instanceof Error ? error.message : 'Unknown error',
       },
       { status: 500 }

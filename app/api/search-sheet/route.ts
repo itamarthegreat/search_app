@@ -1,8 +1,11 @@
 import { google } from 'googleapis';
 import { NextResponse } from 'next/server';
 
-export async function GET() {
+export async function POST(req: Request) {
   try {
+    const { day, city } = await req.json();
+    console.log('Received request with:', { day, city });
+
     const auth = new google.auth.GoogleAuth({
       credentials: {
         client_email: process.env.GOOGLE_CLIENT_EMAIL,
@@ -12,45 +15,83 @@ export async function GET() {
     });
 
     const sheets = google.sheets({ version: 'v4', auth });
-
+    
     const response = await sheets.spreadsheets.values.get({
       spreadsheetId: process.env.SHEET_ID,
-      range: 'Cities!A:A',
+      range: 'A:H',
     });
 
     const rows = response.data.values || [];
-    const cities = rows.map(row => row[0]);
-
-    return NextResponse.json({ cities });
-
-  } catch (error) {
-    console.error('Error in cities API:', error);
-    return NextResponse.json(
-      { 
-        error: 'Failed to fetch cities', 
-        details: error instanceof Error ? error.message : 'Unknown error',
-      },
-      { status: 500 }
-    );
-  }
-}
-
-export async function POST(req: Request) {
-  try {
-    const { day, city, rank, type } = await req.json();
-
-    // Define the type for results
-    const results: { name: string; rank?: string; time: string; day: string; date: string; city: string; type: string; location: string; notes?: string }[] = []; // Replace with actual search results
-
-    // Example usage of the variables to avoid ESLint errors
-    console.log(`Search parameters: day=${day}, city=${city}, rank=${rank}, type=${type}`);
+    console.log('Raw data from sheet:', rows[0]);
     
-    return NextResponse.json({ results });
+    // Filter results by day and city if provided
+    const filteredRows = rows.filter(row => {
+      if (row.length < 3) return false;
+
+      const dateStr = row[2]?.trim() || '';
+      if (!dateStr) return false;
+
+      const dayStr = row[1]?.trim() || '';
+      if (!dayStr) return false;
+
+      const dayMapping: { [key: string]: string } = {
+        'רביעי': 'wednesday',
+        'שלישי': 'tuesday',
+        'שני': 'monday',
+        'ראשון': 'sunday',
+        'חמישי': 'thursday',
+        'שישי': 'friday',
+        'שבת': 'saturday'
+      };
+
+      const cleanDayStr = dayStr.replace('יום', '').trim();
+      const normalizedRowDay = dayMapping[cleanDayStr] || cleanDayStr;
+
+      console.log('Processing row:', {
+        date: dateStr,
+        dayStr: cleanDayStr,
+        normalizedDay: normalizedRowDay,
+        requestedDay: day,
+        city: row[6],
+        requestedCity: city,
+      });
+      
+      const matchDay = !day || normalizedRowDay === day.toLowerCase();
+      const matchCity = !city || (row[6] && row[6].trim().toLowerCase() === city.toLowerCase());
+      
+      return matchDay && matchCity;
+    });
+
+    // Format the results
+    const formattedResults = filteredRows.map(row => ({
+      time: row[0] || '',
+      day: row[1]?.replace('יום', '').trim() || '',
+      date: row[2] || '',
+      name: row[3] || '',
+      type: row[4] || '',
+      rank: row[5] || '',
+      city: row[6] || '',
+      location: row[7] || '',
+      notes: row[8] || ''
+    }));
+
+    console.log('Final formatted results:', formattedResults);
+
+    return NextResponse.json({ 
+      results: formattedResults,
+      debug: { 
+        day, 
+        city, 
+        totalRows: rows.length, 
+        filteredCount: filteredRows.length,
+      }
+    });
+
   } catch (error) {
-    console.error('Error in search API:', error);
+    console.error('Error in search-sheet API:', error);
     return NextResponse.json(
       { 
-        error: 'Failed to process search', 
+        error: 'Failed to search sheet', 
         details: error instanceof Error ? error.message : 'Unknown error',
       },
       { status: 500 }

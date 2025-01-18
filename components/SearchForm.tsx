@@ -45,14 +45,16 @@ export default function SearchForm() {
   ];
 
   const ranks = [
-    { id: 'rank1', label: 'דרג ראשון' },
-    { id: 'rank2', label: 'עררים' },
+    { id: 'none', label: 'בחר דרג' },
+    { id: 'ראשון', label: 'דרג ראשון' },
+    { id: 'עררים', label: 'עררים' },
   ];
 
   const types = [
-    'נכות כללית',
-    'נכות מהעבודה איבה ומס הכנסה',
-    'ילד נכה',
+    { id: 'none', label: 'בחר תחום' },
+    { id: 'נכות כללית', label: 'נכות כללית' },
+    { id: 'נכות מהעבודה איבה ומס הכנסה', label: 'נכות מהעבודה איבה ומס הכנסה' },
+    { id: 'ילד נכה', label: 'ילד נכה' },
   ];
 
   useEffect(() => {
@@ -173,16 +175,16 @@ export default function SearchForm() {
           </div>
 
           <div className="space-y-2">
-            <Label htmlFor="type" className="text-gray-700 font-medium">סוג פניה</Label>
+            <Label htmlFor="type" className="text-gray-700 font-medium">תחום</Label>
             <div className="select-container">
               <Select value={selectedType} onValueChange={setSelectedType}>
                 <SelectTrigger className="select-trigger">
-                  <SelectValue placeholder="בחר סוג פניה" />
+                  <SelectValue placeholder="בחר תחום" />
                 </SelectTrigger>
                 <SelectContent>
                   {types.map((type) => (
-                    <SelectItem key={type} value={type}>
-                      {type}
+                    <SelectItem key={type.id} value={type.id}>
+                      {type.label}
                     </SelectItem>
                   ))}
                 </SelectContent>
@@ -227,7 +229,7 @@ export default function SearchForm() {
                     <p><span className="font-semibold">עיר:</span> {result.city}</p>
                   </div>
                   <div className="space-y-2">
-                    <p><span className="font-semibold">סוג:</span> {result.type}</p>
+                    <p><span className="font-semibold">תחום:</span> {result.type}</p>
                     <p><span className="font-semibold">מיקום:</span> {result.location}</p>
                     {result.notes && (
                       <p><span className="font-semibold">הערות:</span> {result.notes}</p>

@@ -39,14 +39,12 @@ export async function POST(req: Request) {
   try {
     const { day, city, rank, type } = await req.json();
 
-    // Implement your search logic here
-    // For example, fetch data from a database or another API based on the search parameters
-    
+    // Define the type for results
+    const results: { name: string; rank?: string; time: string; day: string; date: string; city: string; type: string; location: string; notes?: string }[] = []; // Replace with actual search results
+
     // Example usage of the variables to avoid ESLint errors
     console.log(`Search parameters: day=${day}, city=${city}, rank=${rank}, type=${type}`);
     
-    const results = []; // Replace with actual search results
-
     return NextResponse.json({ results });
   } catch (error) {
     console.error('Error in search API:', error);

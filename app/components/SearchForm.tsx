@@ -1,100 +1,111 @@
-import { google } from 'googleapis';
-import { NextResponse } from 'next/server';
+'use client'
 
-export async function POST(req: Request) {
-  try {
-    const { day, city } = await req.json();
-    console.log('Received request with:', { day, city });
+import { useState } from 'react';
+import { Button } from "@/components/ui/button"
+import { Input } from "@/components/ui/input"
+import { Label } from "@/components/ui/label"
+import GoogleAuth from './GoogleAuth';
 
-    const auth = new google.auth.GoogleAuth({
-      credentials: {
-        client_email: process.env.GOOGLE_CLIENT_EMAIL,
-        private_key: process.env.GOOGLE_PRIVATE_KEY?.replace(/\\n/g, '\n'),
-      },
-      scopes: ['https://www.googleapis.com/auth/spreadsheets.readonly'],
-    });
+const SearchForm = () => {
+  const [city, setCity] = useState('');
+  const [day, setDay] = useState('');
+  const [results, setResults] = useState<any[]>([]);
+  const [isLoading, setIsLoading] = useState(false);
+  const [error, setError] = useState('');
+  const [accessToken, setAccessToken] = useState('');
 
-    const sheets = google.sheets({ version: 'v4', auth });
-    
-    const response = await sheets.spreadsheets.values.get({
-      spreadsheetId: process.env.SHEET_ID,
-      range: 'A:H',
-    });
+  const handleSubmit = async (e: React.FormEvent) => {
+    e.preventDefault();
+    if (!accessToken) {
+      setError('Please authenticate with Google first');
+      return;
+    }
+    setIsLoading(true);
+    setError('');
 
-    const rows = response.data.values || [];
-    console.log('Raw data from sheet:', rows[0]);
-    
-    // Filter results by day and city if provided
-    const filteredRows = rows.filter(row => {
-      if (row.length < 3) return false;
-
-      const dateStr = row[2]?.trim() || '';
-      if (!dateStr) return false;
-
-      const dayStr = row[1]?.trim() || '';
-      if (!dayStr) return false;
-
-      const dayMapping: { [key: string]: string } = {
-        'רביעי': 'wednesday',
-        'שלישי': 'tuesday',
-        'שני': 'monday',
-        'ראשון': 'sunday',
-        'חמישי': 'thursday',
-        'שישי': 'friday',
-        'שבת': 'saturday'
-      };
-
-      const cleanDayStr = dayStr.replace('יום', '').trim();
-      const normalizedRowDay = dayMapping[cleanDayStr] || cleanDayStr;
-
-      console.log('Processing row:', {
-        date: dateStr,
-        dayStr: cleanDayStr,
-        normalizedDay: normalizedRowDay,
-        requestedDay: day,
-        city: row[6],
-        requestedCity: city,
+    try {
+      const response = await fetch('/api/search-sheet', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({ city, day, accessToken }),
       });
-      
-      const matchDay = !day || normalizedRowDay === day.toLowerCase();
-      const matchCity = !city || (row[6] && row[6].trim().toLowerCase() === city.toLowerCase());
-      
-      return matchDay && matchCity;
-    });
 
-    // Format the results
-    const formattedResults = filteredRows.map(row => ({
-      time: row[0] || '',
-      day: row[1]?.replace('יום', '').trim() || '',
-      date: row[2] || '',
-      name: row[3] || '',
-      type: row[4] || '',
-      rank: row[5] || '',
-      city: row[6] || '',
-      location: row[7] || '',
-      notes: row[8] || ''
-    }));
-
-    console.log('Final formatted results:', formattedResults);
-
-    return NextResponse.json({ 
-      results: formattedResults,
-      debug: { 
-        day, 
-        city, 
-        totalRows: rows.length, 
-        filteredCount: filteredRows.length,
+      if (!response.ok) {
+        throw new Error('Failed to fetch data');
       }
-    });
 
-  } catch (error) {
-    console.error('Error in search-sheet API:', error);
-    return NextResponse.json(
-      { 
-        error: 'Failed to search sheet', 
-        details: error instanceof Error ? error.message : 'Unknown error',
-      },
-      { status: 500 }
-    );
-  }
-}
+      const data = await response.json();
+      setResults(data.results);
+    } catch (err) {
+      setError('An error occurred while fetching the data.');
+      console.error(err);
+    } finally {
+      setIsLoading(false);
+    }
+  };
+
+  const handleAuthSuccess = (token: string) => {
+    setAccessToken(token);
+  };
+
+  return (
+    <div>
+      <GoogleAuth onAuthSuccess={handleAuthSuccess} />
+      <form onSubmit={handleSubmit} className="space-y-4 mt-4">
+        <div>
+          <Label htmlFor="city">City</Label>
+          <Input
+            id="city"
+            type="text"
+            value={city}
+            onChange={(e) => setCity(e.target.value)}
+          />
+        </div>
+        <div>
+          <Label htmlFor="day">Day</Label>
+          <Input
+            id="day"
+            type="text"
+            value={day}
+            onChange={(e) => setDay(e.target.value)}
+          />
+        </div>
+        <Button type="submit" disabled={isLoading || !accessToken}>
+          {isLoading ? 'Searching...' : 'Search'}
+        </Button>
+      </form>
+
+      {error && <p className="text-red-500 mt-4">{error}</p>}
+
+      {results.length > 0 && (
+        <div className="mt-8">
+          <h2 className="text-xl font-semibold mb-4">Results:</h2>
+          <div className="overflow-x-auto">
+            <table className="min-w-full bg-white border border-gray-300">
+              <thead>
+                <tr>
+                  {Object.keys(results[0]).map((key) => (
+                    <th key={key} className="py-2 px-4 border-b">{key}</th>
+                  ))}
+                </tr>
+              </thead>
+              <tbody>
+                {results.map((row, index) => (
+                  <tr key={index}>
+                    {Object.values(row).map((value: any, cellIndex) => (
+                      <td key={cellIndex} className="py-2 px-4 border-b">{value}</td>
+                    ))}
+                  </tr>
+                ))}
+              </tbody>
+            </table>
+          </div>
+        </div>
+      )}
+    </div>
+  );
+};
+
+export default SearchForm;

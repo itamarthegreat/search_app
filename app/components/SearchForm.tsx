@@ -1,3 +1,4 @@
+// Updated app/components/SearchForm.tsx
 'use client'
 
 import { useState, useEffect } from 'react'
@@ -11,13 +12,25 @@ import {
   SelectValue,
 } from "@/components/ui/select"
 
+interface Result {
+  name: string;
+  rank?: string;
+  time: string;
+  day: string;
+  date: string;
+  city: string;
+  type: string;
+  location: string;
+  notes?: string;
+}
+
 export default function SearchForm() {
   const [selectedDay, setSelectedDay] = useState<string>('')
   const [selectedCity, setSelectedCity] = useState<string>('')
   const [cities, setCities] = useState<string[]>([])
   const [isLoading, setIsLoading] = useState(true)
   const [error, setError] = useState<string>('')
-  const [results, setResults] = useState<any[]>([])
+  const [results, setResults] = useState<Result[]>([])
   const [isSearching, setIsSearching] = useState(false)
 
   const days = [
@@ -184,4 +197,4 @@ export default function SearchForm() {
       )}
     </div>
   )
-} 
+}

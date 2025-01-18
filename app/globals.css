@@ -1,0 +1,165 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@layer base {
+  :root {
+    --background: 0 0% 100%;
+    --foreground: 222.2 84% 4.9%;
+
+    --card: 0 0% 100%;
+    --card-foreground: 222.2 84% 4.9%;
+
+    --popover: 0 0% 100%;
+    --popover-foreground: 222.2 84% 4.9%;
+
+    --primary: 221.2 83.2% 53.3%;
+    --primary-foreground: 210 40% 98%;
+
+    --secondary: 210 40% 96.1%;
+    --secondary-foreground: 222.2 47.4% 11.2%;
+
+    --muted: 210 40% 96.1%;
+    --muted-foreground: 215.4 16.3% 46.9%;
+
+    --accent: 210 40% 96.1%;
+    --accent-foreground: 222.2 47.4% 11.2%;
+
+    --destructive: 0 84.2% 60.2%;
+    --destructive-foreground: 210 40% 98%;
+
+    --border: 214.3 31.8% 91.4%;
+    --input: 214.3 31.8% 91.4%;
+    --ring: 221.2 83.2% 53.3%;
+
+    --radius: 0.75rem;
+  }
+
+  .dark {
+    --background: 222.2 84% 4.9%;
+    --foreground: 210 40% 98%;
+
+    --card: 222.2 84% 4.9%;
+    --card-foreground: 210 40% 98%;
+
+    --popover: 222.2 84% 4.9%;
+    --popover-foreground: 210 40% 98%;
+
+    --primary: 217.2 91.2% 59.8%;
+    --primary-foreground: 222.2 47.4% 11.2%;
+
+    --secondary: 217.2 32.6% 17.5%;
+    --secondary-foreground: 210 40% 98%;
+
+    --muted: 217.2 32.6% 17.5%;
+    --muted-foreground: 215 20.2% 65.1%;
+
+    --accent: 217.2 32.6% 17.5%;
+    --accent-foreground: 210 40% 98%;
+
+    --destructive: 0 62.8% 30.6%;
+    --destructive-foreground: 210 40% 98%;
+
+    --border: 217.2 32.6% 17.5%;
+    --input: 217.2 32.6% 17.5%;
+    --ring: 224.3 76.3% 48%;
+  }
+}
+
+@layer base {
+  * {
+    @apply border-border;
+  }
+  body {
+    @apply bg-gradient-to-br from-blue-50 to-indigo-50 min-h-screen;
+  }
+}
+
+/* Custom animations */
+@keyframes float {
+  0% { transform: translateY(0px); }
+  50% { transform: translateY(-10px); }
+  100% { transform: translateY(0px); }
+}
+
+.animate-float {
+  animation: float 3s ease-in-out infinite;
+}
+
+/* Custom styles for search results */
+.result-card {
+  @apply bg-white/80 backdrop-blur-sm p-6 rounded-xl shadow-lg hover:shadow-xl transition-all duration-300;
+}
+
+.result-card:hover {
+  @apply transform -translate-y-1;
+}
+
+.result-title {
+  @apply text-xl font-bold text-blue-600 mb-2;
+}
+
+.result-time {
+  @apply text-lg font-semibold text-gray-700;
+}
+
+.result-details {
+  @apply mt-4 grid grid-cols-2 gap-4 text-sm text-gray-600;
+}
+
+/* Custom styles for form elements */
+.form-container {
+  @apply bg-white/90 backdrop-blur-md p-8 rounded-2xl shadow-xl max-w-2xl mx-auto;
+}
+
+.form-title {
+  @apply text-2xl font-bold text-center mb-8 text-gray-800;
+}
+
+.select-container {
+  @apply relative;
+}
+
+.select-trigger {
+  @apply w-full px-4 py-2 text-left bg-white border rounded-lg shadow-sm hover:border-blue-500 focus:border-blue-500 focus:ring-2 focus:ring-blue-200 transition-all duration-200;
+}
+
+.search-button {
+  @apply w-full bg-blue-600 hover:bg-blue-700 text-white font-bold py-3 px-6 rounded-lg shadow-md hover:shadow-lg transform hover:-translate-y-0.5 transition-all duration-200;
+}
+
+.result-rank {
+  @apply text-sm font-medium text-blue-500 mt-1;
+}
+
+.cities-select-content {
+  @apply max-h-[200px] overflow-y-auto;
+}
+
+.result-rank-badge {
+  @apply inline-flex items-center justify-center px-2.5 py-0.5 mr-2 text-sm font-medium 
+         bg-blue-100 text-blue-800 rounded-full;
+}
+
+.rank-label {
+  @apply font-semibold ml-1;
+}
+
+/* Custom scrollbar for cities dropdown */
+.cities-select-content::-webkit-scrollbar {
+  @apply w-2;
+}
+
+.cities-select-content::-webkit-scrollbar-track {
+  @apply bg-gray-100 rounded-full;
+}
+
+.cities-select-content::-webkit-scrollbar-thumb {
+  @apply bg-blue-300 rounded-full hover:bg-blue-400 transition-colors;
+}
+
+/* Firefox scrollbar */
+.cities-select-content {
+  scrollbar-width: thin;
+  scrollbar-color: #93C5FD #F3F4F6;
+}

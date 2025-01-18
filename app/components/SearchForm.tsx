@@ -45,13 +45,13 @@ export default function SearchForm() {
   ];
 
   const ranks = [
-    { id: '', label: 'בחר דרג' },
+    { id: 'none', label: 'בחר דרג' },
     { id: 'ראשון', label: 'דרג ראשון' },
     { id: 'עררים', label: 'עררים' },
   ];
 
   const types = [
-    { id: '', label: 'בחר תחום' },
+    { id: 'none', label: 'בחר תחום' },
     { id: 'נכות כללית', label: 'נכות כללית' },
     { id: 'נכות מהעבודה איבה ומס הכנסה', label: 'נכות מהעבודה איבה ומס הכנסה' },
     { id: 'ילד נכה', label: 'ילד נכה' },

@@ -3,8 +3,8 @@ import { NextResponse } from 'next/server';
 
 export async function POST(req: Request) {
   try {
-    const { day, city } = await req.json();
-    console.log('Received request with:', { day, city });
+    const { day, city, rank, type } = await req.json();
+    console.log('Received request with:', { day, city, rank, type });
 
     const auth = new google.auth.GoogleAuth({
       credentials: {
@@ -24,19 +24,15 @@ export async function POST(req: Request) {
     const rows = response.data.values || [];
     console.log('Raw data from sheet:', rows[0]);
     
-    // פילטור התוצאות לפי יום ועיר
     const filteredRows = rows.filter(row => {
       if (row.length < 3) return false;
 
-      // מחלץ את היום מהתאריך (עמודה 2)
       const dateStr = row[2]?.trim() || '';
       if (!dateStr) return false;
 
-      // מחלץ את היום מהשורה הראשונה (עמודה 1)
       const dayStr = row[1]?.trim() || '';
       if (!dayStr) return false;
 
-      // המרת היום מעברית לאנגלית
       const dayMapping: { [key: string]: string } = {
         'רביעי': 'wednesday',
         'שלישי': 'tuesday',
@@ -47,7 +43,6 @@ export async function POST(req: Request) {
         'שבת': 'saturday'
       };
 
-      // מנקה את המילה "יום" אם קיימת
       const cleanDayStr = dayStr.replace('יום', '').trim();
       const normalizedRowDay = dayMapping[cleanDayStr] || cleanDayStr;
 
@@ -58,15 +53,20 @@ export async function POST(req: Request) {
         requestedDay: day,
         city: row[6],
         requestedCity: city,
+        rank: row[5],
+        requestedRank: rank,
+        type: row[4],
+        requestedType: type,
       });
-      
+
       const matchDay = !day || normalizedRowDay === day.toLowerCase();
       const matchCity = !city || (row[6] && row[6].trim().toLowerCase() === city.toLowerCase());
+      const matchRank = !rank || (row[5] && row[5].trim() === rank);
+      const matchType = !type || (row[4] && row[4].trim().toLowerCase() === type.toLowerCase());
       
-      return matchDay && matchCity;
+      return matchDay && matchCity && matchRank && matchType;
     });
 
-    // המרת התוצאות לפורמט מובנה יותר
     const formattedResults = filteredRows.map(row => ({
       time: row[0] || '',
       day: row[1]?.replace('יום', '').trim() || '',
@@ -102,4 +102,3 @@ export async function POST(req: Request) {
     );
   }
 }
-

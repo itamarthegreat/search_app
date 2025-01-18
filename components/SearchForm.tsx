@@ -1,4 +1,5 @@
 'use client';
+import GoogleAuth from '@/components/GoogleAuth';
 
 import { useState, useEffect } from 'react';
 import { Button } from "@/components/ui/button";

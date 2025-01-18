@@ -45,9 +45,8 @@ export default function SearchForm() {
   ];
 
   const ranks = [
-    { id: 'rank1', label: 'דרג 1' },
-    { id: 'rank2', label: 'דרג 2' },
-    { id: 'rank3', label: 'דרג 3' },
+    { id: 'rank1', label: 'דרג ראשון },
+    { id: 'rank2', label: 'עררים' },
   ];
 
   const types = [

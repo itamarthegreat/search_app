@@ -1,17 +1,17 @@
 'use client'
 
-import { useState, useEffect } from 'react'
-import { Button } from "@/components/ui/button"
-import { Label } from "@/components/ui/label"
+import { useState, useEffect } from 'react';
+import { Button } from "@/components/ui/button";
+import { Label } from "@/components/ui/label";
 import {
   Select,
   SelectContent,
   SelectItem,
   SelectTrigger,
   SelectValue,
-} from "@/components/ui/select"
+} from "@/components/ui/select";
 
-interface SearchResult {
+interface Result {
   name: string;
   rank?: string;
   time: string;
@@ -24,13 +24,15 @@ interface SearchResult {
 }
 
 export default function SearchForm() {
-  const [selectedDay, setSelectedDay] = useState<string>('')
-  const [selectedCity, setSelectedCity] = useState<string>('')
-  const [cities, setCities] = useState<string[]>([])
-  const [isLoading, setIsLoading] = useState(true)
-  const [error, setError] = useState<string>('')
-  const [results, setResults] = useState<SearchResult[]>([])
-  const [isSearching, setIsSearching] = useState(false)
+  const [selectedDay, setSelectedDay] = useState<string>('');
+  const [selectedCity, setSelectedCity] = useState<string>('');
+  const [selectedRank, setSelectedRank] = useState<string>('');
+  const [selectedType, setSelectedType] = useState<string>('');
+  const [cities, setCities] = useState<string[]>([]);
+  const [isLoading, setIsLoading] = useState(true);
+  const [error, setError] = useState<string>('');
+  const [results, setResults] = useState<Result[]>([]);
+  const [isSearching, setIsSearching] = useState(false);
 
   const days = [
     { id: 'sunday', label: 'ראשון' },
@@ -40,57 +42,71 @@ export default function SearchForm() {
     { id: 'thursday', label: 'חמישי' },
     { id: 'friday', label: 'שישי' },
     { id: 'saturday', label: 'שבת' },
-  ]
+  ];
+
+  const ranks = [
+    { id: 'rank1', label: 'דרג 1' },
+    { id: 'rank2', label: 'דרג 2' },
+    { id: 'rank3', label: 'דרג 3' },
+  ];
+
+  const types = [
+    'נכות כללית',
+    'נכות מהעבודה איבה ומס הכנסה',
+    'ילד נכה',
+  ];
 
   useEffect(() => {
     const fetchCities = async () => {
       try {
-        setIsLoading(true)
-        setError('')
-        const response = await fetch('/api/search-sheet/cities')
+        setIsLoading(true);
+        setError('');
+        const response = await fetch('/api/search-sheet/cities');
         if (!response.ok) {
-          throw new Error('Failed to fetch cities')
+          throw new Error('Failed to fetch cities');
         }
-        const data = await response.json()
+        const data = await response.json();
         if (data.error) {
-          throw new Error(data.error)
+          throw new Error(data.error);
         }
-        setCities(data.cities || [])
+        setCities(data.cities || []);
       } catch (error) {
-        console.error('Error fetching cities:', error)
-        setError('שגיאה בטעינת רשימת הערים')
-        setCities([])
+        console.error('Error fetching cities:', error);
+        setError('שגיאה בטעינת רשימת הערים');
+        setCities([]);
       } finally {
-        setIsLoading(false)
+        setIsLoading(false);
       }
-    }
+    };
 
-    fetchCities()
-  }, [])
+    fetchCities();
+  }, []);
 
   const handleSubmit = async (e: React.FormEvent) => {
-    e.preventDefault()
+    e.preventDefault();
     try {
-      setIsSearching(true)
+      setIsSearching(true);
       const response = await fetch('/api/search-sheet', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
         },
-        body: JSON.stringify({ 
+        body: JSON.stringify({
           day: selectedDay,
-          city: selectedCity 
+          city: selectedCity,
+          rank: selectedRank,
+          type: selectedType,
         }),
-      })
-      const data = await response.json()
-      setResults(data.results || [])
+      });
+      const data = await response.json();
+      setResults(data.results || []);
     } catch (error) {
-      console.error('Error:', error)
-      setResults([])
+      console.error('Error:', error);
+      setResults([]);
     } finally {
-      setIsSearching(false)
+      setIsSearching(false);
     }
-  }
+  };
 
   return (
     <div className="form-container space-y-8">
@@ -138,6 +154,43 @@ export default function SearchForm() {
             </div>
             {error && <p className="text-sm text-red-500">{error}</p>}
           </div>
+
+          <div className="space-y-2">
+            <Label htmlFor="rank" className="text-gray-700 font-medium">דרג</Label>
+            <div className="select-container">
+              <Select value={selectedRank} onValueChange={setSelectedRank}>
+                <SelectTrigger className="select-trigger">
+                  <SelectValue placeholder="בחר דרג" />
+                </SelectTrigger>
+                <SelectContent>
+                  {ranks.map((rank) => (
+                    <SelectItem key={rank.id} value={rank.id}>
+                      {rank.label}
+                    </SelectItem>
+                  ))}
+                </SelectContent>
+              </Select>
+            </div>
+          </div>
+
+          <div className="space-y-2">
+            <Label htmlFor="type" className="text-gray-700 font-medium">סוג פניה</Label>
+            <div className="select-container">
+              <Select value={selectedType} onValueChange={setSelectedType}>
+                <SelectTrigger className="select-trigger">
+                  <SelectValue placeholder="בחר סוג פניה" />
+                </SelectTrigger>
+                <SelectContent>
+                  {types.map((type) => (
+                    <SelectItem key={type} value={type}>
+                      {type}
+                    </SelectItem>
+                  ))}
+                </SelectContent>
+              </Select>
+            </div>
+          </div>
+
         </div>
 
         <Button type="submit" disabled={isSearching || isLoading || !!error} 
@@ -195,5 +248,5 @@ export default function SearchForm() {
         )
       )}
     </div>
-  )
+  );
 }

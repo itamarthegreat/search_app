@@ -1,0 +1,17 @@
+import NextAuth from "next-auth";
+import MicrosoftProvider from "next-auth/providers/microsoft";
+
+export const authOptions = {
+  providers: [
+    MicrosoftProvider({
+      clientId: process.env.MICROSOFT_CLIENT_ID,
+      clientSecret: process.env.MICROSOFT_CLIENT_SECRET,
+      authorization: {
+        params: { scope: "openid profile email" },
+      },
+    }),
+  ],
+  secret: process.env.NEXTAUTH_SECRET,
+};
+
+export default NextAuth(authOptions);

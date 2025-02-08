@@ -84,30 +84,30 @@ export default function SearchForm() {
   }, []);
 
   const handleSubmit = async (e: React.FormEvent) => {
-    e.preventDefault();
-    try {
-      setIsSearching(true);
-      const response = await fetch('/api/search-sheet', {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify({
-          day: selectedDay,
-          city: selectedCity,
-          rank: selectedRank,
-          type: selectedType,
-        }),
-      });
-      const data = await response.json();
-      setResults(data.results || []);
-    } catch (error) {
-      console.error('Error:', error);
-      setResults([]);
-    } finally {
-      setIsSearching(false);
-    }
-  };
+  e.preventDefault();
+  try {
+    setIsSearching(true);
+    const response = await fetch('/api/search-sheet', {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify({
+        day: selectedDay,
+        city: selectedCity,
+        rank: selectedRank,
+        type: selectedType,
+      }),
+    });
+    const data = await response.json();
+    setResults(data.results || []);
+  } catch (error) {
+    console.error('Error:', error);
+    setResults([]);
+  } finally {
+    setIsSearching(false);
+  }
+};
 
   return (
     <div className="form-container space-y-8">

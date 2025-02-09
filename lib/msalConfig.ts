@@ -1,5 +1,4 @@
 import { Configuration } from '@azure/msal-browser';
-import React, { createContext } from 'react';
 
 export const msalConfig: Configuration = {
   auth: {

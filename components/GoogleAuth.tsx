@@ -49,4 +49,3 @@ export default function GoogleAuth({ onAuthSuccess }: { onAuthSuccess: (token: s
     <Button onClick={handleAuth}>Authenticate with Google</Button>
   );
 }
-

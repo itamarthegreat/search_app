@@ -10,7 +10,7 @@ export default function MicrosoftLogin() {
   const handleLogin = () => {
     instance.loginPopup({
       scopes: ['User.Read'],
-    }).catch((e: any) => {
+    }).catch((e: unknown) => {
       console.error(e);
     });
   };

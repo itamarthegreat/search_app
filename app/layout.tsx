@@ -1,13 +1,11 @@
-import './globals.css';
-import 'next';
+// filepath: /workspaces/search_app/app/layout.tsx
+import React from 'react';
 import { Inter } from 'next/font/google';
 import { MsalProvider } from '@azure/msal-react';
 import { PublicClientApplication } from '@azure/msal-browser';
 import { msalConfig } from '@/lib/msalConfig';
 
 const inter = Inter({ subsets: ['latin'] });
-
-
 
 const msalInstance = new PublicClientApplication(msalConfig);
 

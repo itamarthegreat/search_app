@@ -1,5 +1,5 @@
 import './globals.css';
-import type { Metadata } from 'next';
+import 'next';
 import { Inter } from 'next/font/google';
 import { MsalProvider } from '@azure/msal-react';
 import { PublicClientApplication } from '@azure/msal-browser';
@@ -7,10 +7,7 @@ import { msalConfig } from '@/lib/msalConfig';
 
 const inter = Inter({ subsets: ['latin'] });
 
-export const metadata: Metadata = {
-  title: 'חיפוש מומחים',
-  description: 'מערכת לחיפוש מומחים לפי יום ועיר',
-};
+
 
 const msalInstance = new PublicClientApplication(msalConfig);
 

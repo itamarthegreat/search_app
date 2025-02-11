@@ -20,10 +20,10 @@ function App() {
 
     return (
         <div className="App">
-            // ...existing code...
+            {/* ...existing code... */}
             <button onClick={handleLogin}>Login with Microsoft</button>
             {user && <div>Welcome, {user.name}</div>}
-            // ...existing code...
+            {/* ...existing code... */}
         </div>
     );
 }

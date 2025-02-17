@@ -11,7 +11,7 @@
   "dependencies": {
     "react": "^17.0.2",
     "react-dom": "^17.0.2",
-    "@azure/msal-browser": "^2.15.0",
+    "@azure/msal-browser": "^4.2.0",
     "@azure/msal-node": "^3.2.2",
     "@azure/msal-react": "^3.0.4",
     "@radix-ui/react-label": "^2.1.1",

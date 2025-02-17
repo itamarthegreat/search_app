@@ -1,4 +1,21 @@
 // filepath: auth.js
+const { azureAd } = require('./config');
+const passport = require('passport');
+const OIDCStrategy = require('passport-azure-ad').OIDCStrategy;
+
+passport.use(new OIDCStrategy({
+    clientID: azureAd.clientId,
+    clientSecret: azureAd.clientSecret,
+    identityMetadata: `https://login.microsoftonline.com/${azureAd.tenantId}/v2.0/.well-known/openid-configuration`,
+    redirectUrl: azureAd.redirectUri,
+    responseType: 'code',
+    responseMode: 'query',
+    scope: ['openid', 'profile', 'email']
+}, (iss, sub, profile, accessToken, refreshToken, done) => {
+    // ...existing code...
+    done(null, profile);
+}));
+
 const msal = require('@azure/msal-node');
 const msalConfig = require('./authConfig');
 

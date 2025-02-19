@@ -4,10 +4,11 @@
   "private": true,
   "scripts": {
     "dev": "next dev",
-    "build": "tsc && webpack",
+    "build": "next build",
     "start": "next start",
     "lint": "next lint",
-    "clean": "rm -rf dist && rm -rf build && rm -rf node_modules/.cache"
+    "clean": "rm -rf dist && rm -rf build && rm -rf node_modules/.cache",
+    "export": "next export"
   },
   "dependencies": {
     "@azure/msal-browser": "^4.3.0",

@@ -1,5 +1,6 @@
 import React, { useState } from 'react';
 import msalInstance from './msalConfig';
+import Login from "./components/Login";
 // ...existing code...
 
 function App() {
@@ -21,6 +22,7 @@ function App() {
     return (
         <div className="App">
             {/* ...existing code... */}
+            <Login />
             <button onClick={handleLogin}>Login with Microsoft</button>
             {user && <div>Welcome, {user.name}</div>}
             {/* ...existing code... */}
